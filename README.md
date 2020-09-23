@@ -1,267 +1,184 @@
-yii-graphql
-==========
-Using Facebook [GraphQL](http://facebook.github.io/graphql/) PHP server implementation. Extends [graphql-php](https://github.com/webonyx/graphql-php) to apply to YII2.
+# yii-graphql #
 
+使用 Facebook [GraphQL](http://facebook.github.io/graphql/) 的PHP服务端实现. 扩展 [graphql-php](https://github.com/webonyx/graphql-php) 以适用于 YII2.
+ 
 [![Latest Stable Version](https://poser.pugx.org/tsingsun/yii2-graphql/v/stable.svg)](https://packagist.org/packages/tsingsun/yii2-graphql)
 [![Build Status](https://travis-ci.org/tsingsun/yii2-graphql.png?branch=master)](https://travis-ci.org/tsingsun/yii2-graphql)
 [![Total Downloads](https://poser.pugx.org/tsingsun/yii2-graphql/downloads.svg)](https://packagist.org/packages/tsingsun/yii2-graphql)
 
 --------
 
-[Chinese document](/docs/README-zh.md)
+[Englist document](/README-en.md)
 
 -------
 
-Features
+yii-graphql特点
 
-* Configuration includes simplifying the definition of standard graphql protocols.
-* Based on the full name defined by the type, implementing on-demand loading and lazy loading, and no need to define all type definitions into the system at load.
-* Mutation input validation support.
-* Provide controller integration and authorization support.
+* 配置简化,包括简化标准graphql协议的定义.
+* 按需要\懒加载,根据类型定义的全限定名,实现按需加载与懒,不需要在系统初始时将全部类型定义加载进入.
+* mutation输入验证支持
+* 提供控制器集成与授权支持
 
-### Install
+### 安装 ###
 
-Using [composer](https://getcomposer.org/)
+使用 [composer](https://getcomposer.org/) 安装:
 ```
-composer require tsingsun/yii2-graphql
+composer require moxuandi/yii2-graphql
 ```
 
-### Type
-The type system is the core of GraphQL, which is embodied in `GraphQLType`. By deconstructing the GraphQL protocol and using the [graph-php](https://github.com/webonyx/graphql-php) library to achieve fine-grained control of all elements, it is convenient to extend the class according to its own needs
+### Type ###
+类型系统是GraphQL的核心,体现在GraphQLType中,通过解构graphql协议,并利用graph-php库达到细粒度的对所有元素的控制,方便根据自身需要进行类扩展.
 
+GraphQLType的主要元素,** 注意元素并不对应到属性或方法中(下同) **
 
-#### The main elements of `GraphQLType`
-
-The following elements can be declared in the `$attributes` property of the class, or as a method, unless stated otherwise. This also applies to all elements after this.
-
-Element  | Type | Description
+元素  | 类型 | 说明
 ----- | ----- | -----
-`name` | string | **Required** Each type needs to be named, with unique names preferred to resolve potential conflicts. The property needs to be defined in the `$attributes` property.
-`description` | string | A description of the type and its use. The property needs to be defined in the `$attributes` property.
-`fields` | array | **Required** The included field content is represented by the fields () method.
-`resolveField` | callback | **function($value, $args, $context, GraphQL\Type\Definition\ResolveInfo $info)** For the interpretation of a field. For example: the fields definition of the user property, the corresponding method is `resolveUserField()`, and `$value` is the passed type instance defined by `type`.
+name | string | **Required** 每一个类型都需要为其命名,如果能唯一是比较安全,但并不强制,该属性需要定义于attribute中
+fields | array | **Required** 包含的字段内容,以fields()方法体现.
+resolveField | callback | **function($value, $args, $context, GraphQL\Type\Definition\ResolveInfo $info)** 对于字段的解释,比如fields定义user属性,则对应的解释方法为resolveUserField() ,$value指定为type定义的类型实例
 
-### Query
+### Query ###
 
-`GraphQLQuery` and `GraphQLMutation` inherit `GraphQLField`. The element structure is consistent, and if you would like a reusable `Field`, you can inherit it.
-Each query of `Graphql` needs to correspond to a `GraphQLQuery` object
+GraphQLQuery,GraphQLMutation继承了GraphQLField,元素结构是一致的,想做对于一些复用性的Field,可以继承它.
+Graphql的每次查询都需要对应到一个GraphQLQuery对象
 
-#### The main elements of `GraphQLField`
+GraphQLField的主要元素
 
- Element | Type  | Description
+ 元素 | 类型  | 说明
 ----- | ----- | -----
-`type` | ObjectType | For the corresponding query type. The single type is specified by `GraphQL::type`, and a list by `Type::listOf(GraphQL::type)`.
-`args` | array | The available query parameters, each of which is defined by `Field`.
-`resolve` | callback | **function($value, $args, $context, GraphQL\Type\Definition\ResolveInfo $info)** `$value` is the root data, `$args` is the query parameters, `$context` is the `yii\web\Application` object, and `$info` resolves the object for the query. The root object is handled in this method.
+type | ObjectType | 对应的查询类型,单一类型用GraphQL::type指定,列表用Type::listOf(GraphQL::type)
+args | array | 查询需要使用的参数,其中每个参数按照Field定义
+resolve | callback | **function($value, $args, $context, GraphQL\Type\Definition\ResolveInfo $info)**,$value为root数据,$args即查询参数,$context上下文,为Yii的yii\web\Application对象,$info为查询解析对象,一般在这个方法中处理根对象
 
-### Mutation
+### Mutation ###
 
-Definition is similar to `GraphQLQuery`, please refer to the above.
+与GraphQLQuery是非常相像,参考说明.
 
-### Simplified Field Definition
+### 简化处理 ###
 
-Simplifies the declarations of `Field`, removing the need to defined as an array with the type key.
-
-#### Standard Definition
+简化了Field的声明,字段可直接使用type
 
 ```php
-//...
-'id' => [
-    'type' => Type::id(),
-],
-//...
-```
-
-#### Simplified Definition
-
-```php
-//...
-'id' => Type::id(),
-//...
-```
-
-### Yii Implementation
-
-### General configuration
-
-JsonParser configuration required
-
-```php
-'components' => [
-    'request' => [
-        'parsers' => [
-            'application/json' => 'yii\web\JsonParser',
-        ],
+标准方式
+    'id'=>[
+        'type'=>type::id(),
     ],
+简化写法
+    'id'=>type::id()
+```
+
+### 在YII使用 ###
+
+本组件采用trait的方式在Component组件中被引入，组件宿主建议的方式是Module
+```php
+     class Module extends Module{
+        use GraphQLModuleTrait;
+     }
+```
+Yii config file:
+```php
+'components'=>[
+    'graphql'=>[
+       'class'=>'xxx\xxxx\module'
+       //主graphql协议配置
+       'schema' => [        
+          'query' => [
+              'user' => 'app\graphql\query\UsersQuery'
+          ],
+          'mutation' => [
+              'login'
+          ],
+          //if you use sample query except query contain interface,fragment,not need set
+          //the key must same as your class definded
+          'types'=>[          
+              'Story'=>'yiiunit\extensions\graphql\objects\types\StoryType'
+          ],
+        ]                
+    ],    
 ];
 ```
-
-#### Module support
-
-Can easily be implemented with `yii\graphql\GraphQLModuleTrait`. The trait is responsible for initialization.
-
+采用的是actions的方法进行集成
 ```php
-class MyModule extends \yii\base\Module
-{
-    use \yii\graphql\GraphQLModuleTrait;
-}
-```
-
-In your application configuration file:
-
-```php
-'modules'=>[
-    'moduleName ' => [
-        'class' => 'path\to\module'
-        //graphql config
-        'schema' => [
-            'query' => [
-                'user' => 'app\graphql\query\UsersQuery'
-            ],
-            'mutation' => [
-                'login'
-            ],
-            // you do not need to set the types if your query contains interfaces or fragments
-            // the key must same as your defined class
-            'types' => [
-                'Story' => 'yiiunit\extensions\graphql\objects\types\StoryType'
-            ],
-        ],
-    ],
-];
-```
-
-Use the controller to receive requests by using `yii\graphql\GraphQLAction`
-
-```php
-class MyController extends Controller
-{
-   function actions() {
+class xxxController extends Controller{
+   function actions()
+   {
        return [
             'index'=>[
                 'class'=>'yii\graphql\GraphQLAction'
-            ],
+            ]
        ];
    }
 }
 ```
 
-#### Component Support
-also you can include the trait with your own components,then initialization yourself.
+在采用动态解析的情况下,如果不想定义types时,schema的写法有讲究.可采用Type::class,避免采用Key方式,也方便直接通过IDE导航到对应的类下
 ```php
-'components'=>[
-    'componentsName' => [
-        'class' => 'path\to\components'
-        //graphql config
-        'schema' => [
-            'query' => [
-                'user' => 'app\graphql\query\UsersQuery'
-            ],
-            'mutation' => [
-                'login'
-            ],
-            // you do not need to set the types if your query contains interfaces or fragments
-            // the key must same as your defined class
-            'types'=>[
-                'Story'=>'yiiunit\extensions\graphql\objects\types\StoryType'
-            ],
-        ],
-    ],
-];
+    'type'=>GraphQL::type(UserType::class)
 ```
 
+### 输入验证
 
-### Input validation
-
-Validation rules are supported.
-In addition to graphql based validation, you can also use Yii Model validation, which is currently used for the validation of input parameters. The rules method is added directly to the mutation definition.
-
+针对mutation的数据提交,提供了验证支持.
+除了graphql基于的验证外,还可以使用yii的验证,目前为针对输入参数验证.直接在mutation定义中增加rules方法,
+与Yii Model的使用方式是一致的.
 ```php
-public function rules() {
-    return [
-        ['password','boolean']
-    ];
-}
-```
-
-### Authorization verification
-
-Since graphql queries can be combined, such as when a query merges two query, and the two query have different authorization constraints, custom authentication is required.
-I refer to this query as "graphql actions"; when all graphql actions conditions are configured, it passes the authorization check.
-
-#### Authenticate
-
-In the behavior method of controller, the authorization method is set as follows
-
-```php
-function behaviors() {
-    return [
-        'authenticator'=>[
-            'class' => 'yii\graphql\filter\auth\CompositeAuth',
-            'authMethods' => [
-                \yii\filters\auth\QueryParamAuth::className(),
-            ],
-            'except' => ['hello']
-        ],
-    ];
-}
-```
-If you want to support IntrospectionQuery authorization, the corresponding graphql action is `__schema`
-
-#### Authorization
-
-If the user has passed authentication, you may want to check the access for the resource. You can use `GraphqlAction`'s `checkAccess` method
-in the controller. It will check all graphql actions.
-
-```php
-class GraphqlController extends Controller
-{
-    public function actions() {
+public function rules()
+    {
         return [
-            'index' => [
-                'class' => 'yii\graphql\GraphQLAction',
-                'checkAccess'=> [$this,'checkAccess'],
-            ]
+            ['password','boolean']
         ];
     }
 
-    /**
-     * authorization
-     * @param $actionName
-     * @throws yii\web\ForbiddenHttpException
-     */
-    public function checkAccess($actionName) {
-        $permissionName = $this->module->id . '/' . $actionName;
-        $pass = Yii::$app->getAuthManager()->checkAccess(Yii::$app->user->id,$permissionName);
-        if (!$pass){
-            throw new yii\web\ForbiddenHttpException('Access Denied');
-        }
-    }
-}
 ```
 
-### Demo
+### 授权验证
 
-#### Creating queries based on graphql protocols
+由于graphql查询是可以采用组合方式，如一次查询合并了两个query，而这两个query具有不同的授权约束，因此在graph中需要采用自定义的验证方式。
+我把这多次查询查询称为graphql actions;当所有的graphql actions条件都满足配置时，才通过授权检查。
 
-Each query corresponds to a GraphQLQuery file.
-
+#### 授权
+在controller的行为方法中设置采用的授权方法,例子如下，
 ```php
+function behaviors()
+{
+    return [
+        'authenticator'=>[
+            'class'=>'yii\graphql\filter\auth\CompositeAuth',
+            'authMethods'=>[
+                \yii\filters\auth\QueryParamAuth::className(),
+            ],
+            'except'=>['hello']
+        ],
+    ];
+}
+```
+如果要支持IntrospectionQueryr的授权，相应的graphql action为"__schema"
+
+### Demo ###
+
+#### 创建基于graphql协议的查询 ####
+
+每次查询对应一个GraphQLQuery文件,
+```php
+
 class UserQuery extends GraphQLQuery
 {
-    public function type() {
+    public function type()
+    {
         return GraphQL::type(UserType::class);
     }
 
-    public function args() {
+    public function args()
+    {
         return [
             'id'=>[
-                'type' => Type::nonNull(Type::id())
+                'type'=>Type::nonNull(Type::id())
             ],
         ];
     }
 
-    public function resolve($value, $args, $context, ResolveInfo $info) {
+    public function resolve($value, $args, $context, ResolveInfo $info)
+    {
         return DataSource::findUser($args['id']);
     }
 
@@ -269,8 +186,7 @@ class UserQuery extends GraphQLQuery
 }
 ```
 
-Define type files based on query protocols
-
+根据查询协议定义类型文件
 ```php
 
 class UserType extends GraphQLType
@@ -328,7 +244,7 @@ class UserType extends GraphQLType
 }
 ```
 
-#### Query instance
+#### 查询实例 ####
 
 ```php
 'hello' =>  "
@@ -380,21 +296,21 @@ class UserType extends GraphQLType
     "
 ```
 
-### Exception Handling
+### 深入了解 ###
 
-You can config the error formater for graph. The default handle uses `yii\graphql\ErrorFormatter`,
-which optimizes the processing of Model validation results.
+有必要了解一些graphql-php的相关知识,这部分git上的文档相对还少些,需要对源码的阅读.下面列出重点
 
-```php
-'modules'=>[
-    'moduleName' => [
-       'class' => 'path\to\module'
-       'errorFormatter' => ['yii\graphql\ErrorFormatter', 'formatError'],
-    ],
-];
+#### DocumentNode (语法解构) ####
+
+```
+array definitions
+    array OperationDefinitionNode
+        string kind
+        array NameNode
+            string kind
+            string value
 ```
 
 ### Future
-
-* `ActiveRecord` tool for generating query and mutation class.
-* Some of the special syntax for graphql, such as `@Directives`, has not been tested
+* ActiveRecord generate tool for generating query and mutation class.
+* 对于graphql的一些特殊语法,像参数语法,内置指令语法还未进行测试

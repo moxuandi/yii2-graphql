@@ -1,5 +1,5 @@
 {
-    "name":"tsingsun/yii2-graphql",
+    "name":"moxuandi/yii2-graphql",
     "description":"facebook graphql server side for yii2 php framework",
     "keyword":["yii2","graphql"],    
     "type":"yii2-extension",
@@ -8,15 +8,17 @@
         {
             "name":"QingShan li",
             "email":"21997272@qq.com"
+        }, {
+            "name":"zhangmoxuan",
+            "email":"1104984259@qq.com"
         }
     ],
     "minimum-stability":"dev",
     "require":{
-        "php": ">=5.6.0",
-        "yiisoft/yii2":"~2.0.10",
-        "webonyx/graphql-php": "^0.13.0",
-        "ecodev/graphql-upload": "^4.0.0",
-        "zendframework/zend-diactoros": "^2.1"
+        "php": ">=7.2.0",
+        "yiisoft/yii2":"~2.0.35",
+        "webonyx/graphql-php": "^0.13.8",
+        "ecodev/graphql-upload": "^4.0.0"
     },
     "require-dev":{
         "phpunit/phpunit": "4.8.*"
