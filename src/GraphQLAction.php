@@ -13,6 +13,7 @@ use yii\base\Action;
 use yii\web\Response;
 use yii\base\InvalidParamException;
 use GraphQL\Upload\UploadMiddleware;
+use Laminas\Diactoros\ServerRequestFactory;
 
 /**
  * GraphQLAction implements the access method of the graph server and returns the query results in the JSON format
@@ -76,6 +77,7 @@ class GraphQLAction extends Action
                 $this->query = $request->getRawBody();
             } else {
                 if (!empty($body['operations'])) {
+                    $serverRequest = ServerRequestFactory::fromGlobals();
                     $uploadMiddleware = new UploadMiddleware();
                     $serverRequest = $uploadMiddleware->processRequest($serverRequest);
                     $parsedBody = $serverRequest->getParsedBody();
