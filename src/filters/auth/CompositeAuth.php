@@ -1,24 +1,25 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tsingsun
- * Date: 2017/5/19
- * Time: 下午1:42
- */
 
 namespace yii\graphql\filters\auth;
 
 use Yii;
+use yii\base\Action;
 use yii\base\InvalidConfigException;
 use yii\filters\auth\AuthInterface;
+use yii\filters\auth\AuthMethod;
 use yii\graphql\GraphQLAction;
+use yii\web\IdentityInterface;
+use yii\web\Request;
+use yii\web\Response;
+use yii\web\UnauthorizedHttpException;
+use yii\web\User;
 
 /**
  * CompositeAuth 用于解决Graphql单入口请求的授权验证。
- * 在graqhql查询中，可以多个请求同时查询，相比较MVC可以认为在一次请求中，发生了多个action的执行行为。
+ * 在graphql查询中，可以多个请求同时查询，相比较MVC可以认为在一次请求中，发生了多个action的执行行为。
  * @package yii\graphql\filters\auth
  */
-class CompositeAuth extends \yii\filters\auth\AuthMethod
+class CompositeAuth extends AuthMethod
 {
     /**
      * @var array the supported authentication methods. This property should take a list of supported
@@ -32,7 +33,9 @@ class CompositeAuth extends \yii\filters\auth\AuthMethod
 
 
     /**
-     * @inheritdoc
+     * @param Action $action
+     * @return bool
+     * @throws UnauthorizedHttpException
      */
     public function beforeAction($action)
     {
@@ -40,7 +43,12 @@ class CompositeAuth extends \yii\filters\auth\AuthMethod
     }
 
     /**
-     * @inheritdoc
+     * @param User $user
+     * @param Request $request
+     * @param Response $response
+     * @return IdentityInterface|null
+     * @throws InvalidConfigException
+     * @throws UnauthorizedHttpException
      */
     public function authenticate($user, $request, $response)
     {
@@ -51,13 +59,11 @@ class CompositeAuth extends \yii\filters\auth\AuthMethod
                     throw new InvalidConfigException(get_class($auth) . ' must implement yii\filters\auth\AuthInterface');
                 }
             }
-
             $identity = $auth->authenticate($user, $request, $response);
             if ($identity !== null) {
                 return $identity;
             }
         }
-
         return null;
     }
 
@@ -108,6 +114,4 @@ class CompositeAuth extends \yii\filters\auth\AuthMethod
             return parent::isActive($action);
         }
     }
-
-
 }

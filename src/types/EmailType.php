@@ -1,11 +1,18 @@
 <?php
+
 namespace yii\graphql\types;
 
 use GraphQL\Error\Error;
+use GraphQL\Language\AST\Node;
 use GraphQL\Language\AST\StringValueNode;
 use GraphQL\Type\Definition\CustomScalarType;
-use GraphQL\Utils;
+use GraphQL\Utils\Utils;
+use UnexpectedValueException;
 
+/**
+ * Class EmailType
+ * @package yii\graphql\types
+ */
 class EmailType extends CustomScalarType
 {
     public function __construct()
@@ -22,7 +29,6 @@ class EmailType extends CustomScalarType
 
     /**
      * Serializes an internal value to include in a response.
-     *
      * @param string $value
      * @return string
      */
@@ -38,22 +44,20 @@ class EmailType extends CustomScalarType
 
     /**
      * Parses an externally provided value (query variable) to use as an input
-     *
      * @param mixed $value
      * @return mixed
      */
     public function parseValue($value)
     {
         if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-            throw new \UnexpectedValueException("Cannot represent value as email: " . Utils::printSafe($value));
+            throw new UnexpectedValueException("Cannot represent value as email: " . Utils::printSafe($value));
         }
         return $value;
     }
 
     /**
      * Parses an externally provided literal value (hardcoded in GraphQL query) to use as an input
-     *
-     * @param \GraphQL\Language\AST\Node $valueAST
+     * @param Node $valueAST
      * @return string
      * @throws Error
      */

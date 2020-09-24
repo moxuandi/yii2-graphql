@@ -59,27 +59,27 @@ resolve | callback | **function($value, $args, $context, GraphQL\Type\Definition
 简化了Field的声明,字段可直接使用type
 
 ```php
-标准方式
-    'id'=>[
-        'type'=>type::id(),
-    ],
-简化写法
-    'id'=>type::id()
+// 标准方式
+'id' => [
+    'type'=>type::id(),
+],
+// 简化写法
+'id'=>type::id()
 ```
 
 ### 在YII使用 ###
 
 本组件采用trait的方式在Component组件中被引入，组件宿主建议的方式是Module
 ```php
-     class Module extends Module{
-        use GraphQLModuleTrait;
-     }
+class Module extends \yii\base\Module {
+    use GraphQLModuleTrait;
+}
 ```
 Yii config file:
 ```php
-'components'=>[
+'components' => [
     'graphql'=>[
-       'class'=>'xxx\xxxx\module'
+       'class'=>'xxx\xxxx\module',
        //主graphql协议配置
        'schema' => [        
           'query' => [
@@ -113,7 +113,7 @@ class xxxController extends Controller{
 
 在采用动态解析的情况下,如果不想定义types时,schema的写法有讲究.可采用Type::class,避免采用Key方式,也方便直接通过IDE导航到对应的类下
 ```php
-    'type'=>GraphQL::type(UserType::class)
+'type' => GraphQL::type(UserType::class);
 ```
 
 ### 输入验证
@@ -123,12 +123,11 @@ class xxxController extends Controller{
 与Yii Model的使用方式是一致的.
 ```php
 public function rules()
-    {
-        return [
-            ['password','boolean']
-        ];
-    }
-
+{
+    return [
+        ['password','boolean']
+    ];
+}
 ```
 
 ### 授权验证
@@ -145,7 +144,7 @@ function behaviors()
         'authenticator'=>[
             'class'=>'yii\graphql\filter\auth\CompositeAuth',
             'authMethods'=>[
-                \yii\filters\auth\QueryParamAuth::className(),
+                \yii\filters\auth\QueryParamAuth::class,
             ],
             'except'=>['hello']
         ],
@@ -160,6 +159,10 @@ function behaviors()
 
 每次查询对应一个GraphQLQuery文件,
 ```php
+use GraphQL\Type\Definition\ResolveInfo;
+use GraphQL\Type\Definition\Type;
+use yii\graphql\base\GraphQLQuery;
+use yii\graphql\GraphQL;
 
 class UserQuery extends GraphQLQuery
 {
@@ -172,7 +175,7 @@ class UserQuery extends GraphQLQuery
     {
         return [
             'id'=>[
-                'type'=>Type::nonNull(Type::id())
+                'type' => Type::nonNull(Type::id())
             ],
         ];
     }
@@ -188,6 +191,9 @@ class UserQuery extends GraphQLQuery
 
 根据查询协议定义类型文件
 ```php
+use GraphQL\Type\Definition\Type;
+use yii\graphql\base\GraphQLType;
+use yii\graphql\GraphQL;
 
 class UserType extends GraphQLType
 {
@@ -239,8 +245,6 @@ class UserType extends GraphQLType
     {
         return $user->email2.'test';
     }
-
-
 }
 ```
 

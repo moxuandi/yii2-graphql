@@ -2,13 +2,16 @@
 
 namespace yii\graphql\traits;
 
+/**
+ * Trait GlobalIdTrait
+ * @package yii\graphql\traits
+ */
 trait GlobalIdTrait
 {
     /**
      * Create global id.
-     *
-     * @param  string $type
-     * @param  string|integer $id
+     * @param string $type
+     * @param string|integer $id
      * @return string
      */
     public function encodeGlobalId($type, $id)
@@ -18,8 +21,7 @@ trait GlobalIdTrait
 
     /**
      * Decode the global id.
-     *
-     * @param  string $id
+     * @param string $id
      * @return array
      */
     public function decodeGlobalId($id)
@@ -29,27 +31,23 @@ trait GlobalIdTrait
 
     /**
      * Get the decoded id.
-     *
-     * @param  string $id
+     * @param string $id
      * @return string
      */
     public function decodeRelayId($id)
     {
         list($type, $id) = $this->decodeGlobalId($id);
-
         return $id;
     }
 
     /**
      * Get the decoded GraphQL Type.
-     *
-     * @param  string $id
+     * @param string $id
      * @return string
      */
     public function decodeRelayType($id)
     {
         list($type, $id) = $this->decodeGlobalId($id);
-
         return $type;
     }
 }

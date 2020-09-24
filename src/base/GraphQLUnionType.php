@@ -1,18 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tsingsun
- * Date: 2016/11/15
- * Time: 上午10:25
- */
 
 namespace yii\graphql\base;
 
+use Closure;
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\UnionType;
 use yii\base\InvalidConfigException;
 use yii\graphql\GraphQL;
-
 
 /**
  * Class GraphQLUnionType for UnionType
@@ -28,12 +22,15 @@ class GraphQLUnionType extends GraphQLType
         return [];
     }
 
+    /**
+     * @return Closure
+     * @throws InvalidConfigException
+     */
     protected function getTypeResolver()
     {
         if (!method_exists($this, 'resolveType')) {
             throw new InvalidConfigException(get_called_class() . ' must implement resolveType method');
         }
-
         $resolver = array($this, 'resolveType');
         return function () use ($resolver) {
             $args = func_get_args();
@@ -43,8 +40,10 @@ class GraphQLUnionType extends GraphQLType
 
     /**
      * Get the attributes from the container.
-     *
+     * @param null $name
+     * @param null $except
      * @return array
+     * @throws InvalidConfigException
      */
     public function getAttributes($name = null, $except = null)
     {

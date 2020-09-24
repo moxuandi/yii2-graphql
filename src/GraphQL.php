@@ -1,13 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tsingsun
- * Date: 2016/11/14
- * Time: 下午3:23
- */
 
 namespace yii\graphql;
 
+use Exception;
 use GraphQL\Error;
 use GraphQL\Executor\ExecutionResult;
 use GraphQL\Executor\Executor;
@@ -16,13 +11,14 @@ use GraphQL\Language\AST\NameNode;
 use GraphQL\Language\AST\OperationDefinitionNode;
 use GraphQL\Language\Parser;
 use GraphQL\Language\Source;
-use GraphQL\Type\Schema;
+use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Schema;
 use GraphQL\Validator\DocumentValidator;
 use GraphQL\Validator\Rules\QueryComplexity;
 use Yii;
 use yii\base\InvalidConfigException;
-use yii\graphql\exceptions\TypeNotFound;
+use yii\base\NotSupportedException;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -84,6 +80,7 @@ class GraphQL
      *   'types'=>[],
      * ];
      * @param null|array $schema 配置数组,该数组会导入对象自身的配置持久化下来
+     * @throws Exception
      */
     public function schema($schema = null)
     {
@@ -102,8 +99,10 @@ class GraphQL
      * GraphQl Schema is built according to input. Especially,
      * due to the need of Module and Controller in the process of building ObjectType,
      * the execution position of the method is restricted to a certain extent.
-     * @param Schema|array $schema schema data
+     * @param Schema|array|null $schema schema data
      * @return Schema
+     * @throws NotSupportedException
+     * @throws exceptions\TypeNotFound
      */
     public function buildSchema($schema = null)
     {
@@ -121,7 +120,7 @@ class GraphQL
                 $types[] = $this->getTypeResolution()->parseType($name, true);
             }
         }
-        //graqhql的validator要求query必须有
+        //graphql的validator要求query必须有
         $query = $this->getTypeResolution()->objectType($schemaQuery, [
             'name' => 'Query'
         ]);
@@ -135,7 +134,7 @@ class GraphQL
 
         $this->getTypeResolution()->initTypes([$query, $mutation], $schema == null);
 
-        $result = new Schema([
+        return new Schema([
             'query' => $query,
             'mutation' => $mutation,
             'types' => $types,
@@ -143,7 +142,6 @@ class GraphQL
                 return $this->getTypeResolution()->parseType($name, true);
             }
         ]);
-        return $result;
     }
 
 
@@ -154,7 +152,10 @@ class GraphQL
      * @param null $contextValue
      * @param null $variableValues
      * @param string $operationName
-     * @return array|Error\InvariantViolation
+     * @return array|Promise
+     * @throws Error\SyntaxError
+     * @throws NotSupportedException
+     * @throws exceptions\TypeNotFound
      */
     public function query($requestString, $rootValue = null, $contextValue = null, $variableValues = null, $operationName = '')
     {
@@ -256,6 +257,7 @@ class GraphQL
      * 将查询请求转换为可以转换为schema方法的数组
      * @param $requestString
      * @return array|bool 数组元素为0：query,1:mutation,2:types,当返回true时，表示为IntrospectionQuery
+     * @throws Error\SyntaxError
      */
     public function parseRequestQuery($requestString)
     {
@@ -298,7 +300,9 @@ class GraphQL
      * Type manager access
      * @param string|Type $name
      * @param bool $byAlias if use alias
-     * @return mixed
+     * @return ObjectType|Type|base\GraphQLField|null
+     * @throws NotSupportedException
+     * @throws exceptions\TypeNotFound
      */
     public static function type($name, $byAlias = false)
     {
@@ -312,6 +316,7 @@ class GraphQL
     /**
      * @param $class
      * @param null $name
+     * @throws InvalidConfigException
      */
     public function addType($class, $name = null)
     {
@@ -340,7 +345,7 @@ class GraphQL
      * set error formatter
      * @param Callable $errorFormatter
      */
-    public function setErrorFormatter(Callable $errorFormatter)
+    public function setErrorFormatter(callable $errorFormatter)
     {
         $this->errorFormatter = $errorFormatter;
     }

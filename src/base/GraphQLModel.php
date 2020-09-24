@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tsingsun
- * Date: 2016/11/15
- * Time: 上午10:00
- */
 
 namespace yii\graphql\base;
 
@@ -18,7 +12,6 @@ class GraphQLModel extends Model
 {
     /**
      * All of the attributes set on the container.
-     *
      * @var array
      */
     protected $attributes = [];
@@ -38,7 +31,6 @@ class GraphQLModel extends Model
 
     /**
      * Converts the object into an array.
-     *
      * @param array $fields the fields that the output array should contain. Fields not specified
      * in [[fields()]] will be ignored. If this parameter is empty, all fields as specified in [[fields()]] will be returned.
      * @param array $expand the additional fields that the output array should contain.
@@ -64,7 +56,6 @@ class GraphQLModel extends Model
         return isset($attributes[$name]);
     }
 
-
     public function __set($name, $value)
     {
         $this->attributes[$name] = $value;
@@ -74,6 +65,4 @@ class GraphQLModel extends Model
     {
         unset($this->attributes[$name]);
     }
-
-
 }

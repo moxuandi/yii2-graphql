@@ -1,17 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tsingsun
- * Date: 2017/6/30
- * Time: 下午6:52
- */
 
 namespace yii\graphql\types;
-
 
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
 
+/**
+ * Class PaginationType
+ * @package yii\graphql\types
+ */
 class PaginationType extends InputObjectType
 {
     public function __construct()
@@ -38,8 +35,6 @@ class PaginationType extends InputObjectType
                 ],
             ],
         ];
-
         parent::__construct($config);
     }
-
 }

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tsingsun
- * Date: 2017/6/29
- * Time: 上午9:38
- */
 
 namespace yii\graphql\types;
 
@@ -70,7 +64,7 @@ class SimpleExpressionType extends GraphQLType
                 $ret[$key] = $value;
             } elseif (is_array($value)) {
                 $opExp = key($value);
-                $op = self::$operatorMap[$opExp]??$opExp;
+                $op = self::$operatorMap[$opExp] ?? $opExp;
                 $ret[] = [$op, $key, $value[$opExp]];
             }
         }

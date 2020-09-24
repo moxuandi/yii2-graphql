@@ -2,9 +2,10 @@
 
 namespace yii\graphql;
 
-use Yii;
 use GraphQL\Error\Error;
 use GraphQL\Error\FormattedError;
+use Throwable;
+use Yii;
 use yii\graphql\exceptions\ValidatorException;
 use yii\web\HttpException;
 
@@ -14,6 +15,11 @@ use yii\web\HttpException;
  */
 class ErrorFormatter
 {
+    /**
+     * @param Error $e
+     * @return array|mixed[]
+     * @throws Throwable
+     */
     public static function formatError(Error $e)
     {
         $previous = $e->getPrevious();
@@ -30,7 +36,6 @@ class ErrorFormatter
         } else {
             Yii::error($e->getMessage(), get_class($e));
         }
-
         return FormattedError::createFromException($e, YII_DEBUG);
     }
 }

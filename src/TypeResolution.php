@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tsingsun
- * Date: 2017/7/4
- * Time: 下午2:57
- */
 
 namespace yii\graphql;
 
@@ -13,15 +7,19 @@ use GraphQL\Type\Definition\InterfaceType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\UnionType;
+use GraphQL\Type\Introspection;
 use GraphQL\Utils;
 use Yii;
 use yii\base\InvalidConfigException;
-use yii\graphql\base\GraphQLType;
-use yii\graphql\base\GraphQLField;
-use yii\graphql\exceptions\TypeNotFound;
 use yii\base\NotSupportedException;
-use GraphQL\Type\Introspection;
+use yii\graphql\base\GraphQLField;
+use yii\graphql\base\GraphQLType;
+use yii\graphql\exceptions\TypeNotFound;
 
+/**
+ * Class TypeResolution
+ * @package yii\graphql
+ */
 class TypeResolution
 {
     /**

@@ -1,15 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tsingsun
- * Date: 2016/11/15
- * Time: 上午10:25
- */
 
 namespace yii\graphql\base;
 
 use GraphQL\Type\Definition\InterfaceType;
 
+/**
+ * Class GraphQLInterfaceType
+ * @package yii\graphql\base
+ */
 class GraphQLInterfaceType extends GraphQLType
 {
     protected function getTypeResolver()
@@ -27,7 +25,8 @@ class GraphQLInterfaceType extends GraphQLType
 
     /**
      * Get the attributes from the container.
-     *
+     * @param null $name
+     * @param null $except
      * @return array
      */
     public function getAttributes($name = null, $except = null)

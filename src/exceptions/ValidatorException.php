@@ -1,18 +1,16 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tsingsun
- * Date: 2017/9/15
- * Time: 上午10:51
- */
 
 namespace yii\graphql\exceptions;
 
-
 use Throwable;
 use yii\base\Exception;
+use yii\base\InvalidConfigException;
 use yii\base\Model;
 
+/**
+ * Class ValidatorException
+ * @package yii\graphql\exceptions
+ */
 class ValidatorException extends Exception
 {
     public $formatErrors;
@@ -22,6 +20,7 @@ class ValidatorException extends Exception
      * @param Model $model
      * @param int $code
      * @param Throwable|null $previous
+     * @throws InvalidConfigException
      */
     public function __construct($model, $code = 0, Throwable $previous = null)
     {
@@ -34,8 +33,8 @@ class ValidatorException extends Exception
      */
     private function formatModelErrors($model)
     {
-        foreach ($model->getErrors() as $field => $fielsErrors) {
-            foreach ($fielsErrors as $error) {
+        foreach ($model->getErrors() as $field => $fieldErrors) {
+            foreach ($fieldErrors as $error) {
                 $this->formatErrors[] = ['code' => $field, 'message' => $error];
             }
         }

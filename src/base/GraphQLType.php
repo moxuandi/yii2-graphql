@@ -1,17 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tsingsun
- * Date: 2016/11/15
- * Time: 上午10:26
- */
 
 namespace yii\graphql\base;
 
-use GraphQL\Type\Definition\ObjectType;
+use Closure;
 use GraphQL\Type\Definition\InputObjectType;
+use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
-use yii\base\DynamicModel;
 use yii\graphql\GraphQL;
 
 /**
@@ -34,10 +28,9 @@ class GraphQLType extends GraphQLModel
 
     /**
      * The resolver for a specific field.
-     *
      * @param $name
      * @param $field
-     * @return \Closure|null
+     * @return Closure|null
      */
     protected function getFieldResolver($name, $field)
     {
@@ -51,7 +44,6 @@ class GraphQLType extends GraphQLModel
                 return $resolver(...$args);
             };
         }
-
         return null;
     }
 
@@ -74,7 +66,6 @@ class GraphQLType extends GraphQLModel
      *      'field1ByTypeClassName'=> UserType::class
      *  //GraphQLField Node
      *      'field2'=> HtmlField::class
-     *
      * @return array
      */
     public function getFields()
@@ -82,7 +73,7 @@ class GraphQLType extends GraphQLModel
         $fields = $this->fields();
         $allFields = [];
         foreach ($fields as $name => $field) {
-            //the field is a GraphQlType or GraphQLField
+            // the field is a GraphQlType or GraphQLField
             if (is_string($field)) {
                 $type = GraphQL::type($field);
                 if ($type instanceof GraphQLField) {
@@ -99,7 +90,6 @@ class GraphQLType extends GraphQLModel
                     'name' => $name,
                     'type' => $field
                 ];
-
             }
             $resolver = $this->getFieldResolver($name, $field);
             if ($resolver) {
@@ -124,18 +114,15 @@ class GraphQLType extends GraphQLModel
                 return $this->getFields();
             }
         ]);
-
         $interfaces = $this->interfaces();
         if (sizeof($interfaces)) {
             $attributes['interfaces'] = $interfaces;
         }
-
         return $attributes;
     }
 
     /**
      * Convert this class to its ObjectType.
-     *
      * @return ObjectType |InputObjectType
      */
     public function toType()
