@@ -68,7 +68,9 @@ class GraphQLAction extends Action
         parent::init();
 
         $request = Yii::$app->getRequest();
-        if ($request->isGet) {
+        if ($request->isOptions) {  // 解决跨域问题
+            return true;
+        } elseif ($request->isGet) {
             $this->query = $request->get('query');
             $this->variables = $request->get('variables');
             $this->operationName = $request->get('operationName');
