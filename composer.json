@@ -15,8 +15,8 @@
 	"require": {
 		"php": ">=7.2.0",
 		"yiisoft/yii2": "~2.0.35",
-		"webonyx/graphql-php": "^0.13.8",
-		"ecodev/graphql-upload": "^4.0.0",
+		"webonyx/graphql-php": "^14.3",
+		"ecodev/graphql-upload": "^6.0.0",
 		"laminas/laminas-diactoros": "^2.4.0"
 	},
 	"require-dev": {
